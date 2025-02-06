@@ -80,7 +80,7 @@ async def ayuda(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def lee_stdo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """toma el no. transaccion consulta bd y obtiene estado del proceso"""
     cedula0=10 #update.message.text
-    matrix0 = lee_tabla('transaccion', f"ci_users = {cedula1}","edo_trans != 9", "n")
+    matrix0 = lee_tabla('transaccion', f"ci_users = {cedula0}","edo_trans != 9", "n")
     cedula0_enc = 0
     if len(matrix0) != 0: 
         cedula0_enc = 1
