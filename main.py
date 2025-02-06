@@ -79,15 +79,15 @@ async def ayuda(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def lee_stdo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """toma el no. transaccion consulta bd y obtiene estado del proceso"""
-    cedula=10 #update.message.text
-    matrix0 = lee_tabla('transaccion', f"ci_users = {cedula}","edo_trans != 9", "n")
-    cedula_enc=0
+    cedula0=10 #update.message.text
+    matrix0 = lee_tabla('transaccion', f"ci_users = {cedula1}","edo_trans != 9", "n")
+    cedula0_enc = 0
     if len(matrix0) != 0: 
-        cedula_enc=1
+        cedula0_enc = 1
     
-    if cedula_enc == 0:
+    if cedula0_enc == 0:
         await update.message.reply_text(
-            f"No existe ninguna transaccion con el numero de cedula {cedula} en proceso.\n\n")
+            f"No existe ninguna transaccion con el numero de cedula {cedula0} en proceso.\n\n")
 
         return
     else:
@@ -117,11 +117,12 @@ async def ins_cita(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def lee_lista(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # busco estado de solicitud en bd y asigno variables
-    matrix = lee_tabla('transaccion', "none","", "none")
-    texto = bsc_lst(matrix,9)
+    print(context.user_data)
+    matrix1 = lee_tabla('transaccion', "none","none", "none")
+    texto1 = bsc_lst(matrix1,9)
     await update.message.reply_text(
         "lista de Procesos Almacenados Bd\n\n"
-        f"{texto}\n\n")
+        f"{texto1}\n\n")
 
 #with open("parro.csv") as muni:
 #leer = csv.reader(muni, delimiter=";" )
@@ -134,12 +135,10 @@ async def lee_lista(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # inicio conversa de registro
 async def registro(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Starts the conversation and asks the user about their gender."""
-    
     await update.message.reply_text(
         "Hola Bienvenido a ZonaEDCbot, para registrate necesitamos algunos datos "
         "envia el comando /cancelar para cancelar el proceso.\n\n"
-        "Necesitamos el numero de tu cedula de identidad (solo numeros sin puntos ni letras)?"
-    )
+        "Necesitamos el numero de tu cedula de identidad (solo numeros sin puntos ni letras)?")
 
     return MUNI
 
@@ -147,45 +146,47 @@ async def registro(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def muni(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """toma el municipio consulta bd y obtiene parroquias y pide la parroquia"""
     #reply_keyboard = [["Sucre", "Coche", "El Valle", "Caricuao"]]
-    cedula=update.message.text
-    matrix0 = lee_tabla('transaccion', f"ci_users = {cedula}","edo_trans != 9", "n")
-    cedula_enc=0
-    if len(matrix0) != 0: 
-        cedula_enc=1
+    print(context.user_data)
+    cedula1=update.message.text
+    matrix2 = lee_tabla('transaccion', f"ci_users = {cedula1}","edo_trans != 9", "n")
+    cedula1_enc=0
+    if len(matrix2) != 0: 
+        cedula1_enc=1
     context.user_data['ci_user'] = update.message.text
-    matrix = lee_tabla('municipio', "none","", "none")
-    texto = bsc_lst(matrix,2)
-    if cedula_enc == 0:
+    matrix3 = lee_tabla('municipio', "none","", "none")
+    texto3 = bsc_lst(matrix3,2)
+    if cedula1_enc == 0:
         await update.message.reply_text(
             "lista de Municipios Distrito Capital\n\n"
-            f"{texto}\n\n"
+            f"{texto3}\n\n"
             f"la cedula de identidad enviada es: {context.user_data['ci_user']}, ahora necesitamos el municipio y la parroquia donde se encuantra el ultimo plantel donde cursaste tus estudios, envia el numero del municipio (ver lista arriba)?")
 
         return PARRO
     else:
-        fecha=matrix0[0][7]  #.strftime('%d-%m-%y')
+        fecha=matrix2[0][7]  #.strftime('%d-%m-%y')
         await update.message.reply_text(
-        f"El proceso No. {matrix0[0][0]}, tramitado por la c.i. No.{matrix0[0][1]}, de fecha {fecha}, aun no ha finalizado el proceso iniciado, debes esperar su culminacion para poder iniciar otro tramite.")
+        f"El proceso No. {matrix2[0][0]}, tramitado por la c.i. No.{matrix2[0][1]}, de fecha {fecha}, aun no ha finalizado el proceso iniciado, debes esperar su culminacion para poder iniciar otro tramite.")
         context.user_data.clear()
         return ConversationHandler.END
 
 
 async def parro(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """guarda el municipio y pide la parroquia"""
+    print(context.user_data)
     context.user_data['codmuni'] = update.message.text
-    matrix = lee_tabla('municipio',f"id_muni = { context.user_data['codmuni']}" ,"", 'b')
+    matrix4 = lee_tabla('municipio',f"id_muni = { context.user_data['codmuni']}" ,"", 'b')
     muni_enc=0
-    if len(matrix) != 0: 
+    if len(matrix4) != 0: 
         muni_enc=1
     
     if muni_enc == 1:
-        context.user_data['descmuni'] = matrix[0][1]
-        textob = lee_tabla('parroquia', f"id_muni_parro = { context.user_data['codmuni']}","", 'b')
-        texto = bsc_lst(textob, 2)
+        context.user_data['descmuni'] = matrix4[0][1]
+        texto4b = lee_tabla('parroquia', f"id_muni_parro = { context.user_data['codmuni']}","", 'b')
+        texto4 = bsc_lst(texto4b, 2)
         # context.user_data.setdefault(('codimuni',munides[0]), ('descmuni',munides[1]))
         await update.message.reply_text(
             f"Lista de Parroquias en el municipio {context.user_data['descmuni']}\n\n"
-            f"{texto}\n\n"
+            f"{texto4}\n\n"
             f"Gracias!, ahora envia el numero de la parroquia (ver lista arriba)? ")
 
         return NAME
@@ -201,13 +202,13 @@ async def parro(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """guarda parroquia y pregunto nombre"""
     context.user_data['codparr'] = update.message.text
-    matrix = lee_tabla('parroquia', f"id_parro = { context.user_data['codparr']}","", 'b')
+    matrix5 = lee_tabla('parroquia', f"id_parro = { context.user_data['codparr']}","none", 'b')
     parr_enc=0
-    if len(matrix) != 0: 
+    if len(matrix5) != 0: 
         parr_enc=1
 
     if parr_enc == 1:
-        context.user_data['descparr'] = matrix[0][1]
+        context.user_data['descparr'] = matrix5[0][1]
         await update.message.reply_text(
             f"que bien ; tu parroquia es { context.user_data['descparr']}, ahora envia tu primer nombre?"
         )
@@ -232,11 +233,11 @@ async def apell(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def tram(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """guarda el nombre y pide el apellido"""
     context.user_data['apell_user'] = update.message.text
-    textob = lee_tabla('transTipo',"none","","none")
-    texto = bsc_lst(textob,2)
+    texto5b = lee_tabla('transTipo',"none","","none")
+    texto5 = bsc_lst(texto5b,2)
     await update.message.reply_text(
         "Listas de Tipos de Transacciones:\n\n"
-        f"{texto}\n\n"
+        f"{texto5}\n\n"
         f"ok, tu apellido es { context.user_data['apell_user']}, por ultimo envia el numero del tipo de tramite a realizar (ver lista arriba)."
     )
 
@@ -246,9 +247,9 @@ async def tram(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Skips the location and asks for info about the user."""
     context.user_data['trans_user'] = update.message.text
-    matrix = lee_tabla('transTipo',f"id_transti = { context.user_data['trans_user']}","", "b")
+    matrix6 = lee_tabla('transTipo',f"id_transti = { context.user_data['trans_user']}","none", "b")
     trans_enc=0
-    if len(matrix) != 0: 
+    if len(matrix6) != 0: 
         trans_enc=1
 
     if trans_enc == 1:
@@ -318,7 +319,7 @@ def main() -> None:
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("registrar", registro)],
         states={
-            MUNI: [MessageHandler(filters.TEXT, muni)],
+            MUNI: [MessageHandler(filters.TEXT & ~filters.COMMAND, muni)],
             PARRO:  [MessageHandler(filters.TEXT & ~filters.COMMAND, parro)],
             NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, name)],
             APELL: [MessageHandler(filters.TEXT & ~filters.COMMAND, apell)],
