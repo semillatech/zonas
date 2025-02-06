@@ -188,7 +188,7 @@ def lee_tabla(tabla, wheres, where2, tipo):
         instru = f"SELECT * FROM {tabla} WHERE {wheres} AND {where2}"
     else:
         instru = f"SELECT * FROM {tabla} WHERE 1"
-    print(instru)
+
     db.execute(instru)
     dat = db.fetchall()
     conec.commit()

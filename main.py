@@ -117,7 +117,6 @@ async def ins_cita(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def lee_lista(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # busco estado de solicitud en bd y asigno variables
-    print(context.user_data)
     matrix1 = lee_tabla('transaccion', "none","none", "none")
     texto1 = bsc_lst(matrix1,9)
     await update.message.reply_text(
@@ -146,7 +145,6 @@ async def registro(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def muni(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """toma el municipio consulta bd y obtiene parroquias y pide la parroquia"""
     #reply_keyboard = [["Sucre", "Coche", "El Valle", "Caricuao"]]
-    print(context.user_data)
     cedula1=update.message.text
     matrix2 = lee_tabla('transaccion', f"ci_users = {cedula1}","edo_trans != 9", "n")
     cedula1_enc=0
@@ -172,7 +170,6 @@ async def muni(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def parro(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """guarda el municipio y pide la parroquia"""
-    print(context.user_data)
     context.user_data['codmuni'] = update.message.text
     matrix4 = lee_tabla('municipio',f"id_muni = { context.user_data['codmuni']}" ,"", 'b')
     muni_enc=0
@@ -258,7 +255,7 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         apelluser = context.user_data['apell_user']
         transuser = context.user_data['trans_user']
         codparr = context.user_data['codparr']
-        context.user_data['desc_trans_user'] = matrix[0][1]
+        context.user_data['desc_trans_user'] = matrix6[0][1]
         desctransuser = context.user_data['desc_trans_user']
         today = date.today()
         idrow=ins_tabla('transaccion', 'NULL', ciuser, nombuser, apelluser, context._user_id,codparr,transuser, today,1,"campos")
