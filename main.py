@@ -70,7 +70,7 @@ async def ayuda(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Hola! Bienvenid@ a ZonaEDCbot, puedes usar el menu en la barra del chat para\
     conocer los comandos disponibles o /registrar si eres usuario nuevo\n\n")
-    await update.message.text("No existe.\n\n")
+    #await update.message.text("No existe.\n\n")
     #today = date.today()
     #now= datetime.now()
     #print(today)
