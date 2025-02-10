@@ -98,7 +98,21 @@ def crteTusers():
         )"""
     )
     conec.commit()
-    conec.close()    
+    conec.close()
+
+def crteTestados():
+    # sqlite crea en las tablas un campo rowid que es autoincemental
+    conec= sql.connect("zonacita.db")
+    db = conec.cursor()
+    db.execute(
+        """CREATE TABLE IF NOT EXISTS estados (
+        id_edo integer,
+        desc_edo text,
+        primary key(id_edo)
+        )"""
+    )
+    conec.commit()
+    conec.close()       
 
 def crteTmunicipio():
     # sqlite crea en las tablas un campo rowid que es autoincemental
@@ -160,16 +174,19 @@ def ins_tabla(tabla, c1, c2,c3,c4,c5,c6,c7,c8,c9,oper):
         if tabla == 'citas':
             instru = f"INSERT INTO citas VALUES (NULL,'{c2}','{c3}','{c4}','{c5}')"
         elif tabla == 'transTipo':
-            instru = f"INSERT INTO transTipo VALUES ('NULL','{c2}')"
+            instru = f"INSERT INTO transTipo VALUES (NULL,'{c2}')"
         elif tabla == 'transaccion':
             instru = f"INSERT INTO transaccion VALUES (NULL,{c2},'{c3}','{c4}',{c5},{c6},{c7},'{c8}',{c9})"
         elif tabla == 'users':
-            instru = f"INSERT INTO users VALUES ('NULL','{c2}','{c3}','{c4}','{c5}','{c6}','{c7}')"
+            instru = f"INSERT INTO users VALUES (NULL,'{c2}','{c3}','{c4}','{c5}','{c6}','{c7}')"
+        elif tabla == 'estados':
+            instru = f"INSERT INTO estados VALUES (NULL,'{c2}')"
         else:
-            instru = f"INSERT INTO {tabla} VALUES ('NULL')"
+            instru = f"INSERT INTO {tabla} VALUES (NULL,'')"
     else:
         instru = f"INSERT INTO {tabla} VALUES ({c1})"
-      
+    
+    #print(instru)  
     db.execute(instru)
     rowid = f"SELECT last_insert_rowid() FROM {tabla} LIMIT 1"
     db.execute(rowid)
@@ -186,6 +203,8 @@ def lee_tabla(tabla, wheres, where2, tipo):
         instru = f"SELECT * FROM {tabla} WHERE {wheres}"
     elif tipo == 'n':
         instru = f"SELECT * FROM {tabla} WHERE {wheres} AND {where2}"
+    elif tipo == 'e1':
+        instru = f"SELECT * FROM {tabla} ENJOY BY {where2} WHERE {wheres}"
     else:
         instru = f"SELECT * FROM {tabla} WHERE 1"
 

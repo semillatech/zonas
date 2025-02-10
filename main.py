@@ -70,6 +70,7 @@ async def ayuda(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Hola! Bienvenid@ a ZonaEDCbot, puedes usar el menu en la barra del chat para\
     conocer los comandos disponibles o /registrar si eres usuario nuevo\n\n")
+    await update.message.text("No existe.\n\n")
     #today = date.today()
     #now= datetime.now()
     #print(today)
@@ -79,41 +80,65 @@ async def ayuda(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def lee_stdo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """toma el no. transaccion consulta bd y obtiene estado del proceso"""
-    cedula0=10 #update.message.text
-    matrix0 = lee_tabla('transaccion', f"ci_users = {cedula0}","edo_trans != 9", "n")
-    cedula0_enc = 0
+    user_trans= context._user_id
+    matrix0 = lee_tabla('transaccion', f"id_teleg_users = {user_trans}","edo_trans != 9", "n")
+    trans_enc = 0
     if len(matrix0) != 0: 
-        cedula0_enc = 1
+        trans_enc = 1
     
-    if cedula0_enc == 0:
+    if trans_enc == 0:
         await update.message.reply_text(
-            f"No existe ninguna transaccion con el numero de cedula {cedula0} en proceso.\n\n")
-
+            f"No existe ninguna transaccion activa para su usuario.\n\n")
+        
         return
     else:
+        textotrans=bsc_lst(matrix0,9)
         fecha=matrix0[0][7]  #.strftime('%d-%m-%y')
         edo=matrix0[0][8]
         await update.message.reply_text(
-        f"El proceso No. {matrix0[0][0]}, tramitado por la c.i. No.{matrix0[0][1]}, de fecha {fecha}, tiene un estado de: {edo}.")
+        f"Sus procesos activos:\n\n{textotrans}.\n\n")
         
         return
     
 
-async def ins_camb_proce(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def camb_trans(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # busco estado de solicitud en bd y asigno variables
+    #comando= update.message.text.split(' ')
+    if len(context.args) == 2:
+        trans_num = context.args[0] 
+        unidad=  context.args[1]
+        await update.message.reply_text(f"usted envio no.transaccion: {trans_num} y unidad que procesa: {unidad}\n\n"
+         "el estado sera actualizado al siguente correspondiente a la unidad")
+        return
     
-    num_soli = "2025_02_00010"
-    tipos = "1.- En Proceso...\n2.- Esperando cosignacion de documentos en su zona educativa\n3.- Espera Retiro documento finalizado tome cita\n4.-n....."
-    estado =f"Los tipos de estado de proceso son: {tipos}"
-    await update.message.reply_text(f"Hola! , este proceso esta aun en programacion")
+    else:
+        #leo transaccion comparo numero proceso y cambio a proceso + 1 e informo el estado
+        await update.message.reply_text(f"usted debe enviar el comando junto del no.proceso y num.unidad separados por un espacio ejem: /proceso 12 1")
+        
+        return
+    
 
 async def ins_cita(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # busco estado de solicitud en bd y asigno variables
-    num_soli_ = "2025_02_00010"
-    parro_ = "Zona Educativa ME"
     cita= datetime.today()
-    estado_ =f"Aqui insertaran citas al terminar el proceso seleccionado cuando finalice para retirar documentos"
-    await update.message.reply_text(f"Hola el proceso de cita aun esta en programacion...hoy {cita.strftime('%d-%m-%y')} ")
+    #comando= update.message.text.split(' ')
+    if len(context.args) == 2:
+        ci_user = context.args[0] #busco table transac
+        uni_num = context.args[1]  #busco tabla zonas 
+        dia = '20-02-2025'
+        horaini = '8:00am'
+        horafin = '9:00am'
+        totaldia = '25'
+        cita =  'busco cita +1 > numero citas por hora por dia en bd' #busco cita proxima enb cita
+        await update.message.reply_text(f" Cita programada para la unidad: {uni_num}\nusuario : {ci_user}\ndia : {dia}\nentre las : {horaini} y las : {horafin}\nCantidad citas dia: {totaldia}\n\nAtencion:No se atendera si usted no notifica presencia en el intervalo de hora señalado. Debera solicitar cita nuevamente, Gracias.\n\n")
+        return
+    
+    else:
+        #leo transaccion comparo numero proceso y cambio a proceso + 1 e informo el estado
+        await update.message.reply_text(f"usted debe enviar el comando junto del no.unidad y num.cedula del la persona que hace el tramite separados por un espacio ejem: /cita 55555555 1")
+        
+        return
+
 
 async def lee_lista(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # busco estado de solicitud en bd y asigno variables
@@ -332,7 +357,7 @@ def main() -> None:
     application.add_handler(CommandHandler('estado', lee_stdo))
     application.add_handler(CommandHandler('cita', ins_cita))
     application.add_handler(CommandHandler('listado', lee_lista))
-    application.add_handler(CommandHandler('proceso', ins_camb_proce))
+    application.add_handler(CommandHandler('proceso', camb_trans))
     application.add_handler(conv_handler)
 
     # Run the bot until the user presses Ctrl-C
@@ -340,4 +365,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    #crteTestados()
+    #ins_tabla('estados','n','espera entrega documentos zona.','c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9','campos')
+    
     main()
